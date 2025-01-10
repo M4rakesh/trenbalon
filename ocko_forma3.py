@@ -130,13 +130,13 @@ def pievienot_treneri():
         kvalifikācija = kvalifikācija_entry.get()
         
 
-        if vards and uzvards and izglītība and kvalifikācija.isdigit():
+        if vards and uzvards and izglītība and kvalifikācija:
             cursor.execute(
-                "INSERT INTO Sportisti (vards, uzvards, izglītība,kvalifikācija) VALUES (?, ?, ?, ?)",
+                "INSERT INTO Treneri (vards, uzvards, izglītība,kvalifikācija) VALUES (?, ?, ?, ?)",
                 (vards, uzvards, izglītība, kvalifikācija)
             )
             conn.commit()
-            messagebox.showinfo("Veiksmīgi", "Sportists pievienots!")
+            messagebox.showinfo("Veiksmīgi", "Treneris pievienots!")
             logs.destroy()
         else:
             messagebox.showerror("Kļūda", "Lūdzu, aizpildiet visus laukus korekti!")
@@ -167,16 +167,17 @@ def meklēt_treneri():
     def atrast_treneri():
         vards = vards_entry.get()
         if vards:
-            cursor.execute("SELECT * FROM Sportisti WHERE vards LIKE ?", (f"%{vards}%",))
+            cursor.execute("SELECT * FROM Treneri WHERE vards LIKE ?", (f"%{vards}%",))
             rezultati = cursor.fetchall()
             if rezultati:
                 rezultati_str = ""
                 for r in rezultati:
                     rezultati_str += f"{r[0]}: {r[1]} {r[2]}, {r[3]}\n"
+                    messagebox.showinfo("Rezultāti",f"treneris {r[1]} tika atrasts .")
             else:
-                messagebox.showinfo("Rezultāti", "Netika atrasts neviens sportists.")
+                messagebox.showinfo("Rezultāti", "Netika atrasts neviens treneris.")
         else:
-            messagebox.showerror("Kļūda", "Lūdzu, ievadiet sportista vārdu!")
+            messagebox.showerror("Kļūda", "Lūdzu, ievadiet trenera vārdu!")
 
     logs = tk.Toplevel()
     logs.title("Meklēt sportistu")
@@ -192,11 +193,11 @@ def meklēt_treneri():
 
 def dzēst_treneri():
     def dzēst_treneri_no_db():
-        id_sportista = id_sportista_entry.get()
-        if id_sportista.isdigit():
-            cursor.execute("DELETE FROM Sportisti WHERE id_sportista = ?", (id_sportista,))
+        id_trenera = id_trenera_entry.get()
+        if id_trenera.isdigit():
+            cursor.execute("DELETE FROM Treneri WHERE id_trenera = ?", (id_trenera,))
             conn.commit()
-            messagebox.showinfo("Veiksmīgi", f"Sportists ar ID {id_sportista} tika izdzēsts!")
+            messagebox.showinfo("Veiksmīgi", f"Treneris ar ID {id_trenera} tika izdzēsts!")
             logs.destroy()
         else:
             messagebox.showerror("Kļūda", "Lūdzu, ievadiet derīgu ID!")
@@ -205,9 +206,9 @@ def dzēst_treneri():
     logs.title("Dzēst sportistu")
     logs.geometry("300x150")
 
-    tk.Label(logs, text="Sportista ID:").pack()
-    id_sportista_entry = tk.Entry(logs)
-    id_sportista_entry.pack()
+    tk.Label(logs, text="Trenera ID:").pack()
+    id_trenera_entry = tk.Entry(logs)
+    id_trenera_entry.pack()
 
     dzēst_btn = tk.Button(logs, text="Dzēst", command=dzēst_treneri_no_db)
     dzēst_btn.pack(pady=10)
